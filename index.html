@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>MiniCraft 3D Simple</title>
+<title>MiniCraft 3D Fixed</title>
 <style>
   body { margin:0; overflow:hidden; background:#87CEEB; }
   #menu { 
@@ -50,6 +50,7 @@ function startGame(){
   bgMusic.play();
 
   scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x87CEEB);
   camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
 
   renderer = new THREE.WebGLRenderer({antialias:true});
@@ -87,7 +88,7 @@ function startGame(){
     }
   }
 
-  // Вода (просто блок)
+  // Вода
   const waterGeo = new THREE.BoxGeometry(10,0.5,10);
   const waterMat = new THREE.MeshStandardMaterial({color:0x1e90ff, transparent:true, opacity:0.7});
   const water = new THREE.Mesh(waterGeo, waterMat);
@@ -114,16 +115,15 @@ document.addEventListener('keyup',(e)=>keys[e.key.toLowerCase()]=false);
 function animate(){
   requestAnimationFrame(animate);
 
-  // Движение игрока
   const speed = 0.1;
   if(keys['w']) player.position.z -= speed;
   if(keys['s']) player.position.z += speed;
   if(keys['a']) player.position.x -= speed;
   if(keys['d']) player.position.x += speed;
 
-  // Камера 3-го лица
-  camera.position.set(player.position.x, player.position.y + 5, player.position.z + 8);
-  camera.lookAt(player.position);
+  // Камера 3-го лица немного сзади и выше игрока
+  camera.position.lerp(new THREE.Vector3(player.position.x, player.position.y+5, player.position.z+8), 0.1);
+  camera.lookAt(player.position.x, player.position.y+1, player.position.z);
 
   // NPC движение
   npcs.forEach(n=>{
